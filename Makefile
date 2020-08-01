@@ -768,18 +768,20 @@ else
 ifdef CONFIG_PROFILE_ALL_BRANCHES
 KBUILD_CFLAGS	+= -O2
 else
-ifeq ($(cc-name),gcc)
 KBUILD_CFLAGS   += -O2
-endif
-ifeq ($(cc-name),clang)
-KBUILD_CFLAGS   += -O3
-KBUILD_CFLAGS	+= -mcpu=cortex-a73 -mtune=cortex-a73
-endif
 endif
 endif
 
 ifdef CONFIG_CC_WERROR
 KBUILD_CFLAGS	+= -Werror
+endif
+
+ifeq ($(cc-name),clang)
+KBUILD_CFLAGS   += -mcpu=cortex-a53 -mtune=cortex-a53
+endif
+
+ifeq ($(cc-name),gcc)
+KBUILD_CFLAGS   += -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
@@ -795,7 +797,6 @@ endif
 ifdef CONFIG_READABLE_ASM
 # Disable optimizations that make assembler listings hard to read.
 # reorder blocks reorders the control in the function
-# ipa clone creates specialized cloned functions
 # partial inlining inlines only parts of functions
 KBUILD_CFLAGS += $(call cc-option,-fno-reorder-blocks,) \
                  $(call cc-option,-fno-ipa-cp-clone,) \
